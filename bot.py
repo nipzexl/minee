@@ -7,6 +7,7 @@ EcoBala — Эко-тамагочи бот на aiogram 3.x
 
 import asyncio
 import logging
+from aiohttp import web
 from aiogram import Bot, Dispatcher, F
 from aiogram.types import (
     Message, CallbackQuery,
@@ -365,5 +366,21 @@ async def main():
     await dp.start_polling(bot)         # Запускаем polling
 
 
-if __name__ == "__main__":
+async def handle(request):
+    return web.Response(text="Bot is running!")
+
+async def main():
+    # Запуск мини-сайта для обмана Render
+    app = web.Application()
+    app.router.add_get('/', handle)
+    runner = web.AppRunner(app)
+    await runner.setup()
+    site = web.TCPSite(runner, '0.0.0.0', 10000)
+    await site.start()
+    
+    # Запуск вашего бота
+    print("Polling started!")
+    await dp.start_polling(bot)
+
+if __name__ == '__main__':
     asyncio.run(main())
